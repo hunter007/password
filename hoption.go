@@ -34,7 +34,7 @@ var supportAlgorithms = map[string]struct{}{
 type HasherOption struct {
 	// Algorithm: Support md5, unsalted_md5, pbkdf2_sha256, pbkdf2_sha1,
 	// argon2, bcrypt, bcrypt_sha256, scrypt, sha1
-	Algorithm string `josn:"algorithm"`
+	Algorithm string `json:"algorithm"`
 
 	Secret string `json:"secret"`
 
