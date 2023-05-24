@@ -1,6 +1,6 @@
 module github.com/hunter007/password-validator
 
-go 1.20
+go 1.18
 
 require golang.org/x/crypto v0.9.0
 
