@@ -17,12 +17,13 @@ type ValidatorOption struct {
 	MaxLength uint8 `json:"max_length"`
 
 	// CommonPasswordUrl
-	CommonPasswordUrl string `json:"common_password_url"`
+	CommonPasswordUrl string   `json:"common_password_url"`
 	CommonPasswords   []string `json:"common_passwords"`
 
 	RequireDigit       bool `json:"require_digit"`
 	RequireLowercase   bool `json:"require_lowercase"`
 	RequireUppercase   bool `json:"require_uppercase"`
+	RequireLetter      bool `json:"require_letter"`
 	RequirePunctuation bool `json:"require_punctuation"`
 }
 
@@ -117,7 +118,11 @@ func (v *validator) Validate(password string) error {
 		return v.error()
 	}
 
-	if !v.validateCommonPasswords(password){
+	if v.opt.RequireLetter && (!hasUpperLetter && !hasLowerLetter) {
+		return v.error()
+	}
+
+	if !v.validateCommonPasswords(password) {
 		return errCommon
 	}
 
@@ -126,7 +131,7 @@ func (v *validator) Validate(password string) error {
 
 func (v *validator) validateCommonPasswords(password string) bool {
 	p := strings.ToLower(password)
-	for _, s := v.opt.CommonPasswords {
+	for _, s := range v.opt.CommonPasswords {
 		if s == p {
 			return false
 		}
@@ -155,18 +160,21 @@ func (v *validator) error() error {
 	}
 
 	if v.opt.RequireLowercase && v.opt.RequireUppercase {
-		builder.WriteString("upper or lower letters, ")
+		builder.WriteString("upper and lower letters, ")
 	} else if v.opt.RequireLowercase {
-		builder.WriteString("upper letters, ")
-	} else if v.opt.RequireUppercase {
 		builder.WriteString("lower letters, ")
+	} else if v.opt.RequireUppercase {
+		builder.WriteString("upper letters, ")
+	} else if v.opt.RequireLetter && !v.opt.RequireLowercase && !v.opt.RequireUppercase {
+		builder.WriteString("upper or lower letters, ")
 	}
 
 	if v.opt.RequirePunctuation {
 		builder.WriteString("punctuations, ")
 	}
 
-	return errors.New(builder.String())
+	s := strings.TrimSpace(builder.String())
+	return errors.New(strings.Trim(s, ","))
 }
 
 // New return a Validator
