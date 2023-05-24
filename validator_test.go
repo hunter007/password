@@ -186,7 +186,7 @@ func TestValidatorError(t *testing.T) {
 			} else if d.option.RequirePunctuation && d.option.RequireDigit && d.option.RequireLetter && !d.option.RequireLowercase && !d.option.RequireUppercase {
 				s := err.Error()
 				if !strings.Contains(s, "digit") || !strings.Contains(s, "upper or lower letters") || !strings.Contains(s, "punctuations") {
-					t.Errorf("Error string should contains 'digit', 'punctuations' and 'upper or lower letters'")
+					t.Errorf("Err string should contains 'digit', 'punctuations' and 'upper or lower letters'")
 				}
 			}
 		})
