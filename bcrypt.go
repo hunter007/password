@@ -21,7 +21,7 @@ func (hasher *bcryptHasher) Encode(password string) (string, error) {
 
 	hash, err := bcrypt.GenerateFromPassword(data, bcrypt.DefaultCost)
 	if err != nil {
-		return "", nil
+		return "", err
 	}
 	return fmt.Sprintf("%s%s%s", hasher.algo, sep, string(hash)), nil
 }

@@ -16,8 +16,7 @@ type ValidatorOption struct {
 	// MaxLength should be less than 32, and more than `MinLength`
 	MaxLength uint8 `json:"max_length"`
 
-	// CommonPasswordUrl
-	CommonPasswordUrl string   `json:"common_password_url"`
+	CommonPasswordURL string   `json:"common_password_url"`
 	CommonPasswords   []string `json:"common_passwords"`
 
 	RequireDigit       bool `json:"require_digit"`
@@ -28,12 +27,12 @@ type ValidatorOption struct {
 }
 
 func (opt *ValidatorOption) loadCommonPasswords() error {
-	opt.CommonPasswordUrl = strings.TrimSpace(opt.CommonPasswordUrl)
-	if len(opt.CommonPasswordUrl) == 0 {
+	opt.CommonPasswordURL = strings.TrimSpace(opt.CommonPasswordURL)
+	if len(opt.CommonPasswordURL) == 0 {
 		return nil
 	}
 
-	resp, err := http.Get(opt.CommonPasswordUrl)
+	resp, err := http.Get(opt.CommonPasswordURL)
 	if err != nil {
 		return err
 	}

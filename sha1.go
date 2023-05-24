@@ -1,7 +1,7 @@
 package passwordvalidator
 
 import (
-	"crypto/sha1"
+	"crypto/sha1" // #nosec
 	"fmt"
 	"strings"
 )
@@ -15,7 +15,7 @@ func (hasher *sha1Hasher) Encode(password string) (string, error) {
 }
 
 func (hasher *sha1Hasher) encode(password, salt string) (string, error) {
-	sum := sha1.Sum([]byte(fmt.Sprintf("%s%s", salt, password)))
+	sum := sha1.Sum([]byte(fmt.Sprintf("%s%s", salt, password))) // #nosec
 	return strings.Join([]string{sha1Algo, salt, string(sum[:])}, sep), nil
 }
 

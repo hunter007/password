@@ -103,7 +103,8 @@ func TestValidatorError(t *testing.T) {
 				RequireUppercase: true,
 			},
 			password: "%^sd122",
-		}, {
+		},
+		{
 			name: "Password should contains lower and upper letters",
 			option: &ValidatorOption{
 				MinLength:        4,
@@ -112,7 +113,8 @@ func TestValidatorError(t *testing.T) {
 				RequireUppercase: true,
 			},
 			password: "%^&2323",
-		}, {
+		},
+		{
 			name: "Password should contains punctuations",
 			option: &ValidatorOption{
 				MinLength:          4,
@@ -120,7 +122,8 @@ func TestValidatorError(t *testing.T) {
 				RequirePunctuation: true,
 			},
 			password: "234sdfs",
-		}, {
+		},
+		{
 			name: "Password should contains digit, letter and punctuations",
 			option: &ValidatorOption{
 				MinLength:          4,

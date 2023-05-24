@@ -1,7 +1,7 @@
 package passwordvalidator
 
 import (
-	"crypto/sha1"
+	"crypto/sha1" // #nosec
 	"crypto/sha256"
 	"encoding/base64"
 	"hash"
@@ -86,13 +86,13 @@ func (hasher *pbkdf2Hasher) Harden(password, encoded string) (string, error) {
 		return "", err
 	}
 
-	extra_iterations := hasher.iterCount - pi.Iterations
-	if extra_iterations > 0 {
+	extraIterations := hasher.iterCount - pi.Iterations
+	if extraIterations > 0 {
 		return hasher.encode(
 			pi.Algorithm,
 			[]byte(password),
 			[]byte(pi.Salt),
-			extra_iterations,
+			extraIterations,
 		), nil
 	}
 

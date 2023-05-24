@@ -1,7 +1,7 @@
 package passwordvalidator
 
 import (
-	"crypto/md5"
+	"crypto/md5" // #nosec
 	"strings"
 )
 
@@ -22,7 +22,8 @@ func (hasher *md5Hasher) Encode(password string) (string, error) {
 }
 
 func (hasher *md5Hasher) encode(password, salt string) (string, error) {
-	h := md5.New()
+	h := md5.New() // #nosec
+
 	// to support `unsalted_md5`
 	if len(salt) > 0 {
 		h.Write([]byte(salt))
