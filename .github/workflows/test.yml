@@ -1,0 +1,50 @@
+name: Unit test
+
+on:
+  push:
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+    name: Test on ${{ matrix.gover }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        gover:
+          - "1.15"
+          - "1.16"
+          - "1.17"
+          - "1.18"
+          - "1.19"
+          - "1.20"
+    env:
+      GOVER: ${{ matrix.gover }}
+      GOLANGCILINT_VER: v1.52.2
+
+    steps:
+    
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Set up Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: ${{ env.GOVER }}
+    
+    - name: Tidy
+      run: go mod tidy -compat=${{ env.GOVER }}
+
+    - name: Test
+      run: go test -count=1 -race -coverprofile=coverage.txt -covermode=atomic ./...
+    
+    - name: Cover
+      uses: codecov/codecov-action@v3
+      
+    - name: Lint
+      uses: golangci/golangci-lint-action@latest
+      with:
+        version: ${{ env.GOLANGCILINT_VER }}
+        skip-cache: true
