@@ -15,7 +15,7 @@ func (hasher *sha1Hasher) Encode(password string) (string, error) {
 }
 
 func (hasher *sha1Hasher) encode(password, salt string) (string, error) {
-	h := sha1.New()
+	h := sha1.New() // #nosec
 	h.Write([]byte(salt))
 	h.Write([]byte(password))
 	parts := []string{sha1Algo, salt, hex.EncodeToString(h.Sum(nil))}
