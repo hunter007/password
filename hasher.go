@@ -1,5 +1,7 @@
 package passwordvalidator
 
+import "errors"
+
 type Hasher interface {
 	Encode(password string) (string, error)
 	Decode(decoded string) (*PasswordInfo, error)
@@ -8,7 +10,12 @@ type Hasher interface {
 	Harden(password, encoded string) (string, error)
 }
 
+var errNilHasherOption = errors.New("nil HasherOption")
+
 func NewHasher(opt *HasherOption) (Hasher, error) {
+	if opt == nil {
+		return nil, errNilHasherOption
+	}
 	err := opt.validate()
 	if err != nil {
 		return nil, err

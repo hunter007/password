@@ -1,6 +1,9 @@
 package passwordvalidator
 
-import "testing"
+import (
+	"strings"
+	"testing"
+)
 
 func TestDefaultArgon2(t *testing.T) {
 	opt := &HasherOption{
@@ -16,6 +19,55 @@ func TestDefaultArgon2(t *testing.T) {
 	if err != nil {
 		t.Errorf("Encode(encoded1) should be ok: %s", err)
 	}
+	t.Logf("encoded1:  %s\n", encoded1)
+
+	wrongEncoded := "aa" + encoded1
+	_, err = hasher.Decode(wrongEncoded)
+	if err != errUnknownAlgorithm {
+		t.Errorf("Decode(wrongEncoded) should be errUnknownAlgorithm: %s", err)
+	}
+
+	parts := strings.SplitN(encoded1, sep, 7)
+	iter := parts[2]
+
+	parts[2] = "er"
+	wrongIter := strings.Join(parts, sep)
+	_, err = hasher.Decode(wrongIter)
+	if err == nil {
+		t.Error("Decode(wrongIter) should be error")
+	}
+	parts[2] = iter
+
+	memory := parts[3]
+	parts[3] = "er"
+	wrongMemory := strings.Join(parts, sep)
+	_, err = hasher.Decode(wrongMemory)
+	if err == nil {
+		t.Error("Decode(wrongMemory) should be error")
+	}
+	parts[3] = memory
+
+	parallelism := parts[4]
+	parts[4] = "er"
+	wrongParallelism := strings.Join(parts, sep)
+	_, err = hasher.Decode(wrongParallelism)
+	if err == nil {
+		t.Error("Decode(wrongMemory) should be error")
+	}
+	parts[4] = parallelism
+
+	keyLength := parts[5]
+	parts[5] = "er"
+	wrongKeyLength := strings.Join(parts, sep)
+	_, err = hasher.Decode(wrongKeyLength)
+	if err == nil {
+		t.Error("Decode(keyLength) should be error")
+	}
+	// Verify error
+	if hasher.Verify(password1, wrongKeyLength) {
+		t.Error("Verify(password1, wrongKeyLength) should be error")
+	}
+	parts[5] = keyLength
 
 	encoded2, err := hasher.Encode(password2)
 	if err != nil {
