@@ -2,6 +2,7 @@ package passwordvalidator
 
 import (
 	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"strings"
 
@@ -13,17 +14,24 @@ type bcryptHasher struct {
 }
 
 func (hasher *bcryptHasher) Encode(password string) (string, error) {
+	return hasher.encode(password, hasher.algo, bcrypt.DefaultCost)
+}
+
+func (hasher *bcryptHasher) encode(password, algo string, cost int) (string, error) {
 	var data []byte
-	if hasher.algo == bcryptSha256Algo {
+	if algo == bcryptSha256Algo {
 		d := sha256.Sum256([]byte(password))
 		data = d[:]
+	} else {
+		data = []byte(password)
 	}
 
-	hash, err := bcrypt.GenerateFromPassword(data, bcrypt.DefaultCost)
+	hash, err := bcrypt.GenerateFromPassword(data, cost)
 	if err != nil {
 		return "", err
 	}
-	return fmt.Sprintf("%s%s%s", hasher.algo, sep, string(hash)), nil
+
+	return fmt.Sprintf("%s%s%s", algo, sep, hex.EncodeToString(hash)), nil
 }
 
 func (hasher *bcryptHasher) Decode(decoded string) (*PasswordInfo, error) {
@@ -32,7 +40,12 @@ func (hasher *bcryptHasher) Decode(decoded string) (*PasswordInfo, error) {
 		return nil, errUnknownAlgorithm
 	}
 
-	cost, err := bcrypt.Cost([]byte(parts[1]))
+	b, err := hex.DecodeString(parts[1])
+	if err != nil {
+		return nil, errUnknownAlgorithm
+	}
+
+	cost, err := bcrypt.Cost(b)
 	if err != nil {
 		return nil, errUnknownAlgorithm
 	}
@@ -50,8 +63,12 @@ func (hasher *bcryptHasher) Verify(password, encoded string) bool {
 		return false
 	}
 
-	err = bcrypt.CompareHashAndPassword([]byte(pi.Hash), []byte(password))
-	return err == nil
+	encoded2, err := hasher.encode(password, pi.Algorithm, pi.Iterations)
+	if err != nil {
+		return false
+	}
+	fmt.Printf("===3: %s\n", encoded2)
+	return encoded2 == encoded
 }
 
 func (hasher *bcryptHasher) MustUpdate(encoded string) bool {

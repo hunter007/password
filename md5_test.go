@@ -14,7 +14,7 @@ func TestMd5(t *testing.T) {
 		t.Errorf("error should be nil, now %s", err)
 	}
 
-	password := "1qasw23ed"
+	password := "1qasw2ed"
 	encoded, err := hasher.Encode(password)
 	if err != nil {
 		t.Errorf("failed to Encode(password): %s", err)
@@ -39,7 +39,7 @@ func TestUnsaltedMd5(t *testing.T) {
 		t.Errorf("error should be nil, now %s", err)
 	}
 
-	password := "1qasw23ed"
+	password := "1qsw23ed"
 	encoded, err := hasher.Encode(password)
 	if err != nil {
 		t.Errorf("failed to Encode(password): %s", err)
