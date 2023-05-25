@@ -42,7 +42,7 @@ func (hasher *pbkdf2Hasher) Encode(password string) (string, error) {
 }
 
 func (hasher *pbkdf2Hasher) Decode(encoded string) (*PasswordInfo, error) {
-	parts := strings.SplitN(encoded, sep, 3)
+	parts := strings.SplitN(encoded, sep, 4)
 	iter, err := strconv.Atoi(parts[1])
 	if err != nil {
 		return nil, err
