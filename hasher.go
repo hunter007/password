@@ -23,4 +23,5 @@ type PasswordInfo struct {
 	Hash       string
 	Iterations int
 	Salt       string
+	Others     interface{}
 }

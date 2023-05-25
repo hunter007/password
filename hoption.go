@@ -11,7 +11,7 @@ const (
 	unsaltedMd5Algo  = "unsalted_md5"
 	pbkdf2Sha256Algo = "pbkdf2_sha256"
 	pbkdf2Sha1Algo   = "pbkdf2_sha1"
-	argon2Algo       = "argon2"
+	argon2Algo       = "argon2id"
 	bcryptAlgo       = "bcrypt"
 	bcryptSha256Algo = "bcrypt_sha256"
 	scryptAlgo       = "scrypt"
@@ -33,7 +33,7 @@ var supportAlgorithms = map[string]struct{}{
 // HasherOption Hasher option
 type HasherOption struct {
 	// Algorithm: Support md5, unsalted_md5, pbkdf2_sha256, pbkdf2_sha1,
-	// argon2, bcrypt, bcrypt_sha256, scrypt, sha1
+	// argon2id, bcrypt, bcrypt_sha256, scrypt, sha1
 	Algorithm string `json:"algorithm"`
 
 	Secret string `json:"secret"`
@@ -41,7 +41,8 @@ type HasherOption struct {
 	// Salt: cannot contain '$'
 	Salt string `json:"salt"`
 	// Iterations: should be gratter than 0
-	Iterations int `json:"iterations"`
+	Iterations int         `json:"iterations"`
+	Params     interface{} `json:"params"`
 }
 
 func (ho *HasherOption) validate() error {
