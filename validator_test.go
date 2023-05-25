@@ -1,10 +1,29 @@
 package passwordvalidator
 
 import (
+	"encoding/json"
 	"strconv"
 	"strings"
 	"testing"
 )
+
+func TestValidatorOptionWithMap(t *testing.T) {
+	var voption ValidatorOption
+
+	config := map[string]interface{}{
+		"min_length":          6,
+		"max_length":          20,
+		"common_passwords":    []string{"123456", "1qasw23ed"},
+		"require_digit":       true,
+		"require_letter":      true,
+		"require_punctuation": true,
+	}
+	b, _ := json.Marshal(config)
+	err := json.Unmarshal(b, &voption)
+	if err != nil {
+		t.Errorf("config ValidatorOption with map error: %s", err)
+	}
+}
 
 func TestValidatorOption(t *testing.T) {
 	data := []struct {
