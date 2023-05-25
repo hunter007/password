@@ -2,10 +2,42 @@ package passwordvalidator
 
 import (
 	"encoding/json"
+	"net/http"
+	"net/http/httptest"
 	"strconv"
 	"strings"
 	"testing"
 )
+
+func mockServer() *httptest.Server {
+	healthHandler := func(rw http.ResponseWriter, r *http.Request) {
+		rw.Header().Set("Content-Type", "text/plain")
+		rw.WriteHeader(http.StatusOK)
+		rw.Write([]byte("1234567\n111111111"))
+	}
+
+	return httptest.NewServer(http.HandlerFunc(healthHandler))
+}
+
+func TestValidatorOptionWithCommonPasswordURL(t *testing.T) {
+	server := mockServer()
+	defer server.Close()
+
+	voption := &ValidatorOption{
+		MinLength:         6,
+		MaxLength:         20,
+		CommonPasswordURL: server.URL,
+	}
+	err := voption.validate()
+	if err != nil {
+		t.Errorf("should be nil, now %s", err)
+	}
+	t.Logf("CommonPasswords: %+v\n", voption.CommonPasswords)
+
+	if len(voption.CommonPasswords) != 2 {
+		t.Errorf("get CommonPasswordURL error")
+	}
+}
 
 func TestValidatorOptionWithMap(t *testing.T) {
 	var voption ValidatorOption

@@ -38,6 +38,10 @@ config := map[string]interface{}{
 b, _ := json.Marshal(config)
 err := json.Unmarshal(b, &voption)
 
+// If CommonPasswords or CommonPasswordURL provided, password will be validated as common password.
+// http request is sent by method `GET`, and response body will be as plain text, splited by "\n", one password one line.
+voption.CommonPasswordURL = "http://xxx.com/pwd"
+
 // don't forget to handle err
 validator, _ := passwordvalidator.New(voption)
 

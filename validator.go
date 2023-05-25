@@ -10,7 +10,7 @@ import (
 
 // Validator option
 type ValidatorOption struct {
-	// MinLength should be more than 0, and less than `MaxLength``
+	// MinLength should be more than 0, and less than `MaxLength`
 	MinLength uint8 `json:"min_length"`
 
 	// MaxLength should be less than 32, and more than `MinLength`
@@ -36,19 +36,18 @@ func (opt *ValidatorOption) loadCommonPasswords() error {
 	if err != nil {
 		return err
 	}
-
 	defer resp.Body.Close()
 	bs, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}
+	s := strings.Split(string(bs), "\n")
 
 	if opt.CommonPasswords == nil {
-		opt.CommonPasswords = make([]string, 0, 0)
+		opt.CommonPasswords = make([]string, 0, len(s))
 	}
-	s := strings.Split(string(bs), "\n")
-	opt.CommonPasswords = append(opt.CommonPasswords, s...)
 
+	opt.CommonPasswords = append(opt.CommonPasswords, s...)
 	return nil
 }
 
