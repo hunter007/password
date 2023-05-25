@@ -2,7 +2,7 @@ package passwordvalidator
 
 import "testing"
 
-func TestBcrypt(t *testing.T) {
+func TesBcrypt(t *testing.T) {
 	opt := &HasherOption{
 		Algorithm:  bcryptAlgo,
 		Salt:       "salt",
