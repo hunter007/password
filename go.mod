@@ -1,4 +1,4 @@
-module github.com/hunter007/password-validator
+module github.com/hunter007/password
 
 go 1.18
 

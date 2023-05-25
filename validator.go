@@ -1,4 +1,4 @@
-package passwordvalidator
+package password
 
 import (
 	"errors"
@@ -175,14 +175,12 @@ func (v *validator) error() error {
 	return errors.New(strings.Trim(s, ","))
 }
 
-// New return a Validator
-func New(opt *ValidatorOption) (Validator, error) {
+// NewValidator return a Validator
+func NewValidator(opt *ValidatorOption) (Validator, error) {
 	err := opt.validate()
 	if err != nil {
 		return nil, err
 	}
 
-	return &validator{
-		opt: opt,
-	}, nil
+	return &validator{opt: opt}, nil
 }

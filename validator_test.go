@@ -1,4 +1,4 @@
-package passwordvalidator
+package password
 
 import (
 	"encoding/json"
@@ -89,7 +89,7 @@ func TestValidatorOption(t *testing.T) {
 
 	for _, item := range data {
 		t.Run(item.Name, func(t *testing.T) {
-			_, err := New(item.opt)
+			_, err := NewValidator(item.opt)
 			if err == nil {
 				t.Error("error should occur, not nil.")
 			}
@@ -189,7 +189,7 @@ func TestValidatorError(t *testing.T) {
 
 	for _, d := range data {
 		t.Run(d.name, func(t *testing.T) {
-			v, err := New(d.option)
+			v, err := NewValidator(d.option)
 			if err != nil {
 				t.Errorf("bad option: %s", err)
 			}

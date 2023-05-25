@@ -1,4 +1,4 @@
-package passwordvalidator
+package password
 
 import (
 	"crypto/sha1" // #nosec

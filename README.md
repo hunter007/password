@@ -1,13 +1,13 @@
-# password-validator
+# password
 A password validator wrote with golang.
 
-[![Test](https://github.com/hunter007/password-validator/workflows/Unittest/badge.svg)](https://github.com/hunter007/password-validator/actions?query=workflow%3AUnitTest)[![Go Report Card](https://goreportcard.com/badge/github.com/hunter007/password-validator)](https://goreportcard.com/report/github.com/hunter007/password-validator) ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/hunter007/password-validator) [![codecov](https://codecov.io/gh/hunter007/password-validator/branch/main/graph/badge.svg)](https://codecov.io/gh/hunter007/password-validator) [![Go Reference](https://pkg.go.dev/badge/github.com/hunter007/password-validator.svg)](https://pkg.go.dev/github.com/hunter007/password-validator)
+[![Test](https://github.com/hunter007/password/workflows/Unittest/badge.svg)](https://github.com/hunter007/password/actions?query=workflow%3AUnitTest)[![Go Report Card](https://goreportcard.com/badge/github.com/hunter007/password)](https://goreportcard.com/report/github.com/hunter007/password) ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/hunter007/password) [![codecov](https://codecov.io/gh/hunter007/password/branch/main/graph/badge.svg)](https://codecov.io/gh/hunter007/password) [![Go Reference](https://pkg.go.dev/badge/github.com/hunter007/password.svg)](https://pkg.go.dev/github.com/hunter007/password)
 
 
 ## Install
 
 ```shell
-go get github.com/hunter007/password-validator
+go get github.com/hunter007/password
 ```
 
 ## Usage
@@ -43,7 +43,7 @@ err := json.Unmarshal(b, &voption)
 voption.CommonPasswordURL = "http://xxx.com/pwd"
 
 // don't forget to handle err
-validator, _ := passwordvalidator.New(voption)
+validator, _ := password.New(voption)
 
 // 2. validate password
 password := "user password"
@@ -91,7 +91,7 @@ if err != nil {
     // handler err
 }
 
-hasher, err := passwordvalidator.NewHasher(hoption)
+hasher, err := password.NewHasher(hoption)
 if err != nil {
     // handler err
 }
