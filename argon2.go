@@ -30,10 +30,6 @@ type argon2Hasher struct {
 }
 
 func (hasher *argon2Hasher) Encode(password string) (string, error) {
-	if hasher.params == nil {
-		hasher.params = defaultArgon2Params
-	}
-
 	salt, err := generateRandomBytes(hasher.params.saltLength)
 	if err != nil {
 		return "", err
@@ -112,11 +108,7 @@ func (hasher *argon2Hasher) Verify(password, encoded string) bool {
 	if err != nil {
 		return false
 	}
-	params, ok := pi.Others.(*Argon2Params)
-	if !ok {
-		return false
-	}
-
+	params := pi.Others.(*Argon2Params)
 	salt, _ := hex.DecodeString(pi.Salt)
 	encoded2, err := hasher.encode(password, salt, params)
 	if err != nil {
@@ -136,10 +128,6 @@ func (hasher *argon2Hasher) Harden(password, encoded string) (string, error) {
 }
 
 func newArgon2Hasher(opt *HasherOption) (Hasher, error) {
-	if opt == nil {
-		return nil, errUnknownAlgorithm
-	}
-
 	var params *Argon2Params
 	if opt.Params == nil {
 		params = defaultArgon2Params

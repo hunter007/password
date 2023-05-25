@@ -62,19 +62,21 @@ func (ho *HasherOption) validate() error {
 }
 
 func (ho *HasherOption) NewHasher() (Hasher, error) {
+	var hasher Hasher
+	var err error
 	switch ho.Algorithm {
 	case unsaltedMd5Algo, md5Algo:
-		return newMD5Hasher(ho)
+		hasher, err = newMD5Hasher(ho)
 	case pbkdf2Sha1Algo, pbkdf2Sha256Algo:
-		return newPBKDDF2Hasher(ho)
+		hasher, err = newPBKDDF2Hasher(ho)
 	case argon2Algo:
-		return newArgon2Hasher(ho)
+		hasher, err = newArgon2Hasher(ho)
 	case bcryptSha256Algo, bcryptAlgo:
-		return newBcryptHasher(ho)
+		hasher, err = newBcryptHasher(ho)
 	case scryptAlgo:
-		return newScryptHasher(ho)
+		hasher, err = newScryptHasher(ho)
 	case sha1Algo:
-		return newSha1Hasher(ho)
+		hasher, err = newSha1Hasher(ho)
 	}
-	return nil, errUnknownAlgorithm
+	return hasher, err
 }
