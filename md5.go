@@ -2,6 +2,7 @@ package passwordvalidator
 
 import (
 	"crypto/md5" // #nosec
+	"encoding/hex"
 	"strings"
 )
 
@@ -29,20 +30,20 @@ func (hasher *md5Hasher) encode(password, salt string) (string, error) {
 		h.Write([]byte(salt))
 	}
 	h.Write([]byte(password))
-	parts := []string{hasher.Algorithm(), salt, string(h.Sum(nil))}
+	parts := []string{hasher.Algorithm(), salt, hex.EncodeToString(h.Sum(nil))}
 	return strings.Join(parts, sep), nil
 }
 
 func (hasher *md5Hasher) Decode(encoded string) (*PasswordInfo, error) {
-	parts := strings.SplitN(encoded, sep, 2)
+	parts := strings.SplitN(encoded, sep, 3)
 	if parts[0] != md5Algo && parts[0] != unsaltedMd5Algo {
 		return nil, errUnknownAlgorithm
 	}
 
 	return &PasswordInfo{
 		Algorithm: parts[0],
-		Hash:      parts[1],
-		Salt:      parts[2],
+		Salt:      parts[1],
+		Hash:      parts[2],
 	}, nil
 }
 

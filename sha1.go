@@ -2,7 +2,7 @@ package passwordvalidator
 
 import (
 	"crypto/sha1" // #nosec
-	"fmt"
+	"encoding/hex"
 	"strings"
 )
 
@@ -15,12 +15,15 @@ func (hasher *sha1Hasher) Encode(password string) (string, error) {
 }
 
 func (hasher *sha1Hasher) encode(password, salt string) (string, error) {
-	sum := sha1.Sum([]byte(fmt.Sprintf("%s%s", salt, password))) // #nosec
-	return strings.Join([]string{sha1Algo, salt, string(sum[:])}, sep), nil
+	h := sha1.New() // #nosec
+	h.Write([]byte(salt))
+	h.Write([]byte(password))
+	parts := []string{sha1Algo, salt, hex.EncodeToString(h.Sum(nil))}
+	return strings.Join(parts, sep), nil
 }
 
 func (hasher *sha1Hasher) Decode(encoded string) (*PasswordInfo, error) {
-	parts := strings.SplitN(encoded, sep, 2)
+	parts := strings.SplitN(encoded, sep, 3)
 	if parts[0] != sha1Algo {
 		return nil, errUnknownAlgorithm
 	}
