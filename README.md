@@ -12,7 +12,7 @@ go get github.com/hunter007/password
 
 ## Usage
 
-#### 1. validate password
+#### 1. Validate password
 
 ```go
 // 1. setup ValidatorOption
@@ -57,15 +57,16 @@ if err != nil {
 
 Supported algorithm:
 
-- md5
-- unsalted_md5
-- sha1
-- scrypt
+- argon2id
 - bcrypt
 - bcrypt_sha256
-- argon2id
+- md5
+- unsalted_md5
 - pbkdf2_sha1
 - pbkdf2_sha256
+- sha1
+- scrypt
+
 
 `pbkdf2_sha256` is the recommended, others are not safe enough.
 
@@ -88,12 +89,12 @@ option = map[string]interface{} {
 b, _ := json.Marshal(option)
 err := json.Unmarshal(b, &hoption)
 if err != nil {
-    // handler err
+    // handle err
 }
 
 hasher, err := password.NewHasher(hoption)
 if err != nil {
-    // handler err
+    // handle err
 }
 ```
 #### 3. Encode password
@@ -102,7 +103,7 @@ if err != nil {
 password := "plaintext"
 encoded, err := hasher.Encode(password)
 if err != nil {
-    // handler err
+    // handle err
 }
 ```
 
@@ -111,7 +112,7 @@ if err != nil {
 ```go
 pi, err := hasher.Decode(encoded)
 if err != nil {
-    // handler err
+    // handle err
 }
 // pi contains algorithm, salt, iterations, etc.
 ```
