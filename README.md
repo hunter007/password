@@ -63,7 +63,7 @@ Supported algorithm:
 - scrypt
 - bcrypt
 - bcrypt_sha256
-- argon2
+- argon2id
 - pbkdf2_sha1
 - pbkdf2_sha256
 

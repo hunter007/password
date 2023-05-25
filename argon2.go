@@ -1,13 +1,15 @@
 package passwordvalidator
 
 import (
-	"crypto/rand"
-	"errors"
+	"encoding/hex"
+	"strconv"
+	"strings"
 
 	"golang.org/x/crypto/argon2"
 )
 
-type params struct {
+// Argon2Params Argon2id parameters
+type Argon2Params struct {
 	memory      uint32
 	iterations  uint32
 	parallelism uint8
@@ -15,7 +17,7 @@ type params struct {
 	keyLength   uint32
 }
 
-var defaultParams = &params{
+var defaultArgon2Params = &Argon2Params{
 	memory:      64 * 1024,
 	iterations:  1,
 	parallelism: 4,
@@ -23,49 +25,104 @@ var defaultParams = &params{
 	keyLength:   32,
 }
 
-func generateRandomBytes(n int) ([]byte, error) {
-	b := make([]byte, n)
-	_, err := rand.Read(b)
+type argon2Hasher struct {
+	params *Argon2Params
+}
+
+func (hasher *argon2Hasher) Encode(password string) (string, error) {
+	if hasher.params == nil {
+		hasher.params = defaultArgon2Params
+	}
+
+	salt, err := generateRandomBytes(hasher.params.saltLength)
+	if err != nil {
+		return "", err
+	}
+	return hasher.encode(password, salt, hasher.params)
+}
+
+func (hasher *argon2Hasher) encode(password string, salt []byte, params *Argon2Params) (string, error) {
+	hash := argon2.IDKey(
+		[]byte(password),
+		salt,
+		params.iterations,
+		params.memory,
+		params.parallelism,
+		params.keyLength)
+
+	p := []string{
+		argon2Algo,
+		hex.EncodeToString(salt),
+		strconv.Itoa(int(params.iterations)),
+		strconv.Itoa(int(params.memory)),
+		strconv.Itoa(int(params.parallelism)),
+		strconv.Itoa(int(params.keyLength)),
+		hex.EncodeToString(hash),
+	}
+	return strings.Join(p, sep), nil
+}
+
+func (hasher *argon2Hasher) Decode(encoded string) (*PasswordInfo, error) {
+	parts := strings.SplitN(encoded, sep, 7)
+	if parts[0] != argon2Algo {
+		return nil, errUnknownAlgorithm
+	}
+
+	iter, err := strconv.Atoi(parts[2])
 	if err != nil {
 		return nil, err
 	}
 
-	return b, nil
-}
-
-type argon2Hasher struct {
-	opt *HasherOption
-}
-
-var errArgon2Encode = errors.New("")
-
-func (hasher *argon2Hasher) Encode(password string) (string, error) {
-	salt, err := generateRandomBytes(defaultParams.saltLength)
+	memory, err := strconv.Atoi(parts[3])
 	if err != nil {
-		return "", errArgon2Encode
+		return nil, err
 	}
 
-	hash := argon2.IDKey(
-		[]byte(password),
-		salt,
-		defaultParams.iterations,
-		defaultParams.memory,
-		defaultParams.parallelism,
-		defaultParams.keyLength)
+	parallelism, err := strconv.Atoi(parts[4])
+	if err != nil {
+		return nil, err
+	}
 
-	return argon2Algo + string(hash), nil
-}
+	keyLength, err := strconv.Atoi(parts[5])
+	if err != nil {
+		return nil, err
+	}
 
-func (hasher *argon2Hasher) Decode(encoded string) (*PasswordInfo, error) {
-	// TODO(zhaowentao):
+	salt, err := hex.DecodeString(parts[1])
+	if err != nil {
+		return nil, err
+	}
 	return &PasswordInfo{
-		Algorithm: argon2Algo,
+		Algorithm:  parts[0],
+		Hash:       parts[6],
+		Salt:       parts[1],
+		Iterations: iter,
+		Others: &Argon2Params{
+			memory:      uint32(memory),
+			iterations:  uint32(iter),
+			parallelism: uint8(parallelism),
+			saltLength:  len(salt),
+			keyLength:   uint32(keyLength),
+		},
 	}, nil
 }
 
 func (hasher *argon2Hasher) Verify(password, encoded string) bool {
-	// TODO(zhaowentao): 处理 Verify
-	return false
+	pi, err := hasher.Decode(encoded)
+	if err != nil {
+		return false
+	}
+	params, ok := pi.Others.(*Argon2Params)
+	if !ok {
+		return false
+	}
+
+	salt, _ := hex.DecodeString(pi.Salt)
+	encoded2, err := hasher.encode(password, salt, params)
+	if err != nil {
+		return false
+	}
+	return encoded2 == encoded
 }
 
 func (hasher *argon2Hasher) MustUpdate(encoded string) bool {
@@ -79,5 +136,20 @@ func (hasher *argon2Hasher) Harden(password, encoded string) (string, error) {
 }
 
 func newArgon2Hasher(opt *HasherOption) (Hasher, error) {
-	return &argon2Hasher{opt: opt}, nil
+	if opt == nil {
+		return nil, errUnknownAlgorithm
+	}
+
+	var params *Argon2Params
+	if opt.Params == nil {
+		params = defaultArgon2Params
+	} else {
+		p, ok := opt.Params.(*Argon2Params)
+		if !ok {
+			params = defaultArgon2Params
+		} else {
+			params = p
+		}
+	}
+	return &argon2Hasher{params: params}, nil
 }
