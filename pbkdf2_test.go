@@ -42,6 +42,14 @@ func TestPbkdf2Sha256Hasher(t *testing.T) {
 		t.Errorf("failed to encode password with %s: %s", pbkdf2Sha256Algo, err)
 	}
 
+	wrongEncoded := "aa" + encoded
+	if _, err = hasher.Decode(wrongEncoded); err == nil {
+		t.Error("Decode(wrongEncoded) should error")
+	}
+
+	if hasher.Verify(password, wrongEncoded) {
+		t.Error("Verify(password, wrongEncoded) error")
+	}
 	if !hasher.Verify(password, encoded) {
 		t.Errorf("Algo %s error", pbkdf2Sha256Algo)
 	}

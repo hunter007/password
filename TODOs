@@ -1,0 +1,4 @@
+- Generate password
+- imporove performence
+  - sync.Pool
+- add benchmark test
