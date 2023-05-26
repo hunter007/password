@@ -11,15 +11,15 @@ type sha1Hasher struct {
 }
 
 func (hasher *sha1Hasher) Encode(password string) (string, error) {
-	return hasher.encode(password, hasher.salt)
+	return hasher.encode(password, hasher.salt), nil
 }
 
-func (hasher *sha1Hasher) encode(password, salt string) (string, error) {
+func (hasher *sha1Hasher) encode(password, salt string) string {
 	h := sha1.New() // #nosec
 	h.Write([]byte(salt))
 	h.Write([]byte(password))
 	parts := []string{sha1Algo, salt, hex.EncodeToString(h.Sum(nil))}
-	return strings.Join(parts, sep), nil
+	return strings.Join(parts, sep)
 }
 
 func (hasher *sha1Hasher) Decode(encoded string) (*PasswordInfo, error) {
@@ -40,10 +40,8 @@ func (hasher *sha1Hasher) Verify(password, encoded string) bool {
 	if err != nil {
 		return false
 	}
-	encoded2, err := hasher.encode(password, pi.Salt)
-	if err != nil {
-		return false
-	}
+
+	encoded2 := hasher.encode(password, pi.Salt)
 	return encoded2 == encoded
 }
 

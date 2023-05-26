@@ -21,9 +21,18 @@ func TestMd5(t *testing.T) {
 	}
 	t.Logf("encoded password: %s", encoded)
 
-	equal := hasher.Verify(password, encoded)
-	if !equal {
-		t.Errorf("MD5 error")
+	wrongEncoded := "aa" + encoded
+	_, err = hasher.Decode(wrongEncoded)
+	if err == nil {
+		t.Error("Decode(wrongEncoded) should fail")
+	}
+
+	if hasher.Verify(password, wrongEncoded) {
+		t.Error("Verify(wrongEncoded) should fail")
+	}
+
+	if !hasher.Verify(password, encoded) {
+		t.Error("Verify(wrongEncoded) should be nil")
 	}
 }
 

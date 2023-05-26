@@ -19,10 +19,10 @@ func (hasher *md5Hasher) Algorithm() string {
 }
 
 func (hasher *md5Hasher) Encode(password string) (string, error) {
-	return hasher.encode(password, hasher.salt)
+	return hasher.encode(password, hasher.salt), nil
 }
 
-func (hasher *md5Hasher) encode(password, salt string) (string, error) {
+func (hasher *md5Hasher) encode(password, salt string) string {
 	h := md5.New() // #nosec
 
 	// to support `unsalted_md5`
@@ -31,7 +31,7 @@ func (hasher *md5Hasher) encode(password, salt string) (string, error) {
 	}
 	h.Write([]byte(password))
 	parts := []string{hasher.Algorithm(), salt, hex.EncodeToString(h.Sum(nil))}
-	return strings.Join(parts, sep), nil
+	return strings.Join(parts, sep)
 }
 
 func (hasher *md5Hasher) Decode(encoded string) (*PasswordInfo, error) {
@@ -53,12 +53,7 @@ func (hasher *md5Hasher) Verify(password, encoded string) bool {
 		return false
 	}
 
-	encoded2, err := hasher.encode(password, pi.Salt)
-	if err != nil {
-		return false
-	}
-
-	return encoded2 == encoded
+	return hasher.encode(password, pi.Salt) == encoded
 }
 
 func (hasher *md5Hasher) MustUpdate(encoded string) bool {

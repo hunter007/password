@@ -1,7 +1,20 @@
-# password
-A password validator wrote with golang.
+## password - A password feature library wrote in golang.
 
-[![Test](https://github.com/hunter007/password/workflows/Unittest/badge.svg)](https://github.com/hunter007/password/actions?query=workflow%3AUnitTest)[![Go Report Card](https://goreportcard.com/badge/github.com/hunter007/password)](https://goreportcard.com/report/github.com/hunter007/password) ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/hunter007/password) [![codecov](https://codecov.io/gh/hunter007/password/branch/main/graph/badge.svg)](https://codecov.io/gh/hunter007/password) [![Go Reference](https://pkg.go.dev/badge/github.com/hunter007/password.svg)](https://pkg.go.dev/github.com/hunter007/password)
+[![Test](https://github.com/hunter007/password/workflows/Unittest/badge.svg)](https://github.com/hunter007/password/actions?query=workflow%3AUnitTest)
+[![Go Report Card](https://goreportcard.com/badge/github.com/hunter007/password)](https://goreportcard.com/report/github.com/hunter007/password)
+![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/hunter007/password)
+[![codecov](https://codecov.io/gh/hunter007/password/branch/main/graph/badge.svg)](https://codecov.io/gh/hunter007/password)
+[![Go Reference](https://pkg.go.dev/badge/github.com/hunter007/password.svg)](https://pkg.go.dev/github.com/hunter007/password)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-green.svg)](https://opensource.org/license/apache-2-0)
+
+
+## Highlights
+
+* Validate password according options
+* Validate whether a password is common
+* Generate password according options
+* Encode & decode password according options
+* Verify password according options
 
 
 ## Install
@@ -66,9 +79,6 @@ Supported algorithm:
 - pbkdf2_sha256
 - sha1
 - scrypt
-
-
-`pbkdf2_sha256` is the recommended, others are not safe enough.
 
 ```go
 // have a HasherOption
