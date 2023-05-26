@@ -4,7 +4,7 @@ import (
 	"strings"
 )
 
-const saltEntropy = 128
+const saltEntropy = 64
 
 const (
 	md5Algo          = "md5"

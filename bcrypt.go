@@ -9,10 +9,11 @@ import (
 
 type bcryptHasher struct {
 	algo string
+	cost int
 }
 
 func (hasher *bcryptHasher) Encode(password string) (string, error) {
-	return hasher.encode(password, hasher.algo, bcrypt.DefaultCost)
+	return hasher.encode(password, hasher.algo, hasher.cost)
 }
 
 func (hasher *bcryptHasher) encode(password, algo string, cost int) (string, error) {
@@ -72,8 +73,11 @@ func (hasher *bcryptHasher) Verify(password, encoded string) bool {
 }
 
 func (hasher *bcryptHasher) MustUpdate(encoded string) bool {
-	// TODO(zhaowentao)
-	return false
+	pi, err := hasher.Decode(encoded)
+	if err != nil {
+		return false
+	}
+	return pi.Iterations < hasher.cost
 }
 
 func (hasher *bcryptHasher) Harden(password, encoded string) (string, error) {
@@ -82,5 +86,13 @@ func (hasher *bcryptHasher) Harden(password, encoded string) (string, error) {
 }
 
 func newBcryptHasher(opt *HasherOption) (Hasher, error) {
-	return &bcryptHasher{algo: opt.Algorithm}, nil
+	cost := bcrypt.DefaultCost
+	if opt.Iterations > cost {
+		cost = opt.Iterations
+	}
+
+	return &bcryptHasher{
+		algo: opt.Algorithm,
+		cost: cost,
+	}, nil
 }

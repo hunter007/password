@@ -32,7 +32,6 @@ func TestValidatorOptionWithCommonPasswordURL(t *testing.T) {
 	if err != nil {
 		t.Errorf("should be nil, now %s", err)
 	}
-	t.Logf("CommonPasswords: %+v\n", voption.CommonPasswords)
 
 	if len(voption.CommonPasswords) != 2 {
 		t.Errorf("get CommonPasswordURL error")

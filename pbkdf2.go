@@ -76,8 +76,7 @@ func (hasher *pbkdf2Hasher) MustUpdate(encoded string) bool {
 	}
 
 	updateSalt := mustUpdateSalt(pi.Salt, saltEntropy)
-
-	return pi.Iterations < hasher.iterCount || updateSalt
+	return pi.Iterations < hasher.iterCount || updateSalt || len(hasher.salt) > len(pi.Salt)
 }
 
 func (hasher *pbkdf2Hasher) Harden(password, encoded string) (string, error) {

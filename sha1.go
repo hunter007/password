@@ -46,7 +46,11 @@ func (hasher *sha1Hasher) Verify(password, encoded string) bool {
 }
 
 func (hasher *sha1Hasher) MustUpdate(encoded string) bool {
-	return false
+	pi, err := hasher.Decode(encoded)
+	if err != nil {
+		return false
+	}
+	return mustUpdateSalt(pi.Salt, saltEntropy) || len(pi.Salt) < len(hasher.salt)
 }
 
 func (hasher *sha1Hasher) Harden(password, encoded string) (string, error) {

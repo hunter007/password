@@ -48,7 +48,6 @@ func TestUnsaltedMd5(t *testing.T) {
 		t.Errorf("error should be nil, now %s", err)
 	}
 
-	password := "1qsw23ed"
 	encoded, err := hasher.Encode(password)
 	if err != nil {
 		t.Errorf("failed to Encode(password): %s", err)
@@ -58,5 +57,44 @@ func TestUnsaltedMd5(t *testing.T) {
 	equal := hasher.Verify(password, encoded)
 	if !equal {
 		t.Errorf("MD5 error")
+	}
+}
+
+func TestMustUpdateForMd5(t *testing.T) {
+	opt := HasherOption{
+		Algorithm:  unsaltedMd5Algo,
+		Salt:       "",
+		Iterations: 1,
+	}
+	hasher, _ := NewHasher(&opt)
+	encoded, _ := hasher.Encode(password)
+
+	if hasher.MustUpdate(encoded) {
+		t.Error("should not update")
+	}
+
+	opt1 := HasherOption{
+		Algorithm:  md5Algo,
+		Salt:       "saltsaltsaltsalt",
+		Iterations: 1,
+	}
+	hasher, _ = NewHasher(&opt1)
+	encoded, _ = hasher.Encode(password)
+	if hasher.MustUpdate(encoded) {
+		t.Error("should not update")
+	}
+	wrongEncoded := "aa" + encoded
+	if hasher.MustUpdate(wrongEncoded) {
+		t.Error("should not update because of wrong encoded")
+	}
+
+	opt2 := HasherOption{
+		Algorithm:  md5Algo,
+		Salt:       "saltsaltsaltsa",
+		Iterations: 1,
+	}
+	hasher, _ = NewHasher(&opt2)
+	if hasher.MustUpdate(encoded) {
+		t.Error("should not update because of short salt")
 	}
 }

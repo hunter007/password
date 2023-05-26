@@ -138,3 +138,39 @@ func TestArgon2(t *testing.T) {
 		t.Errorf("Verify() should be false")
 	}
 }
+
+func TestMustUpdateForArgon2(t *testing.T) {
+	opt := &HasherOption{
+		Iterations: 1,
+		Algorithm:  argon2Algo,
+		Params: &Argon2Params{
+			memory:      32 * 1024,
+			iterations:  10,
+			parallelism: 2,
+			saltLength:  8,
+			keyLength:   32,
+		},
+	}
+	hasher, _ := NewHasher(opt)
+	encoded, _ := hasher.Encode(password)
+
+	if hasher.MustUpdate(encoded) {
+		t.Error("should not updated")
+	}
+
+	opt2 := &HasherOption{
+		Iterations: 1,
+		Algorithm:  argon2Algo,
+		Params: &Argon2Params{
+			memory:      32 * 1024,
+			iterations:  10,
+			parallelism: 2,
+			saltLength:  9,
+			keyLength:   32,
+		},
+	}
+	hasher, _ = NewHasher(opt2)
+	if !hasher.MustUpdate(encoded) {
+		t.Error("should updated because of different param")
+	}
+}

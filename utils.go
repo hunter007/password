@@ -5,8 +5,10 @@ import (
 	"math"
 )
 
+const randomChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+
 func mustUpdateSalt(salt string, entropy int) bool {
-	clen := float64(len("RANDOM_STRING_CHARS"))
+	clen := float64(len(randomChars))
 	return float64(len(salt))*math.Log2(clen) < float64(entropy)
 }
 

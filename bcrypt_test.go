@@ -36,7 +36,6 @@ func TestBcrypt(t *testing.T) {
 		Salt:       "salt",
 		Iterations: 1,
 	}
-	password := "1qasw23"
 	hasher, err := NewHasher(opt)
 	if err != nil {
 		t.Errorf("failed to new %s hasher: %s", opt.Algorithm, err)
@@ -70,5 +69,48 @@ func TestBcrypt(t *testing.T) {
 
 	if !hasher.Verify(password, encoded) {
 		t.Errorf("wrong algorithm: %s", opt.Algorithm)
+	}
+}
+
+func TestMustUpdateForBcrypt(t *testing.T) {
+	opt := &HasherOption{
+		Algorithm:  bcryptAlgo,
+		Salt:       "salt",
+		Iterations: 12,
+	}
+	hasher, _ := NewHasher(opt)
+	encoded, _ := hasher.Encode(password)
+	if hasher.MustUpdate(encoded) {
+		t.Error("should not update")
+	}
+
+	opt2 := &HasherOption{
+		Algorithm:  bcryptAlgo,
+		Salt:       "saltsaltsaltsalt",
+		Iterations: 12,
+	}
+	hasher, _ = NewHasher(opt2)
+	if hasher.MustUpdate(encoded) {
+		t.Error("should not update because of no use salt")
+	}
+
+	opt3 := &HasherOption{
+		Algorithm:  bcryptAlgo,
+		Salt:       "saltsaltsaltsa",
+		Iterations: 14,
+	}
+	hasher, _ = NewHasher(opt3)
+	if !hasher.MustUpdate(encoded) {
+		t.Error("should update because of bigger cost")
+	}
+
+	opt4 := &HasherOption{
+		Algorithm:  bcryptAlgo,
+		Salt:       "saltsaltsaltsa",
+		Iterations: 11,
+	}
+	hasher, _ = NewHasher(opt4)
+	if hasher.MustUpdate(encoded) {
+		t.Error("should not update because of smaller cost")
 	}
 }

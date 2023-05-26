@@ -61,7 +61,17 @@ func (hasher *md5Hasher) MustUpdate(encoded string) bool {
 	if err != nil {
 		return false
 	}
-	return mustUpdateSalt(pi.Salt, saltEntropy)
+
+	if pi.Algorithm == unsaltedMd5Algo {
+		return false
+	}
+
+	ret := mustUpdateSalt(pi.Salt, saltEntropy)
+	if ret {
+		return true
+	}
+
+	return len(pi.Salt) < len(hasher.salt)
 }
 
 func (hasher *md5Hasher) Harden(password, encoded string) (string, error) {
