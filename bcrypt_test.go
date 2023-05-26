@@ -47,6 +47,27 @@ func TestBcrypt(t *testing.T) {
 		t.Errorf("failed to encode password with %s: %s", opt.Algorithm, err)
 	}
 	t.Logf("encoded password: %s", encoded)
+
+	wrongEncoded := "AA" + encoded
+	_, err = hasher.Decode(wrongEncoded)
+	if err == nil {
+		t.Error("Decode(wrongEncoded) should be err")
+	}
+	pi, err := hasher.Decode(encoded)
+	if err != nil {
+		t.Errorf("Decode(encoded) should be nil: %s", err)
+	}
+	if pi == nil {
+		t.Error("Decode(encoded) pi should not be nil")
+	}
+	if pi != nil && pi.Algorithm != opt.Algorithm {
+		t.Errorf("wrong pi %s != %s", pi.Algorithm, opt.Algorithm)
+	}
+
+	if hasher.Verify(password, wrongEncoded) {
+		t.Error("should decode error")
+	}
+
 	if !hasher.Verify(password, encoded) {
 		t.Errorf("wrong algorithm: %s", opt.Algorithm)
 	}

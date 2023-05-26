@@ -20,7 +20,21 @@ func TestScrypt(t *testing.T) {
 		t.Errorf("failed to encode password with scrypt: %s", err)
 	}
 
+	wrongEncoded := "aa" + encoded
+	if _, err = hasher.Decode(wrongEncoded); err == nil {
+		t.Error("Decode(wrongEncoded) should be err")
+	}
+
+	if err != errUnknownAlgorithm {
+		t.Errorf("Decode(wrongEncoded) err should be %s: %s", errUnknownAlgorithm, err)
+	}
+
 	t.Logf("encoded password: %s", encoded)
+
+	if hasher.Verify(password, wrongEncoded) {
+		t.Error("Verify(wrongEncoded) should be false")
+	}
+
 	if !hasher.Verify(password, encoded) {
 		t.Error("scrypt verify error")
 	}
