@@ -2,3 +2,4 @@
 - imporove performence
   - sync.Pool
 - add benchmark test
+- Validate passwords used recently
