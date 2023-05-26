@@ -2,7 +2,6 @@ package password
 
 import (
 	"crypto/sha256"
-	"errors"
 	"strings"
 
 	"golang.org/x/crypto/bcrypt"
@@ -36,8 +35,6 @@ func (hasher *bcryptHasher) encode(password, algo string, cost int) (string, err
 
 	return strings.Join(ss, sep), nil
 }
-
-var errHash = errors.New("hash error")
 
 func (hasher *bcryptHasher) Decode(decoded string) (*PasswordInfo, error) {
 	parts := strings.SplitN(decoded, sep, 2)

@@ -28,8 +28,8 @@ func TestBcryptSha256(t *testing.T) {
 	if !hasher.Verify(password, encoded) {
 		t.Errorf("wrong algorithm: %s", opt.Algorithm)
 	}
-
 }
+
 func TestBcrypt(t *testing.T) {
 	opt := &HasherOption{
 		Algorithm:  bcryptAlgo,
