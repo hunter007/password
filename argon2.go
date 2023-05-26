@@ -118,8 +118,12 @@ func (hasher *argon2Hasher) Verify(password, encoded string) bool {
 }
 
 func (hasher *argon2Hasher) MustUpdate(encoded string) bool {
-	// TODO(zhaowentao): 处理 Verify
-	return false
+	pi, err := hasher.Decode(encoded)
+	if err != nil {
+		return false
+	}
+	p := pi.Others.(*Argon2Params)
+	return *p != *hasher.params
 }
 
 func (hasher *argon2Hasher) Harden(password, encoded string) (string, error) {

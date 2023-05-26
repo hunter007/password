@@ -76,7 +76,11 @@ func (hasher *scryptHasher) Verify(password, encoded string) bool {
 }
 
 func (hasher *scryptHasher) MustUpdate(encoded string) bool {
-	return false
+	pi, err := hasher.Decode(encoded)
+	if err != nil {
+		return false
+	}
+	return mustUpdateSalt(pi.Salt, saltEntropy) || len(pi.Salt) < len(hasher.salt)
 }
 
 func (hasher *scryptHasher) Harden(password, encoded string) (string, error) {
