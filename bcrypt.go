@@ -2,8 +2,7 @@ package password
 
 import (
 	"crypto/sha256"
-	"encoding/hex"
-	"fmt"
+	"errors"
 	"strings"
 
 	"golang.org/x/crypto/bcrypt"
@@ -30,9 +29,15 @@ func (hasher *bcryptHasher) encode(password, algo string, cost int) (string, err
 	if err != nil {
 		return "", err
 	}
+	ss := []string{
+		algo,
+		string(hash),
+	}
 
-	return fmt.Sprintf("%s%s%s", algo, sep, hex.EncodeToString(hash)), nil
+	return strings.Join(ss, sep), nil
 }
+
+var errHash = errors.New("hash error")
 
 func (hasher *bcryptHasher) Decode(decoded string) (*PasswordInfo, error) {
 	parts := strings.SplitN(decoded, sep, 2)
@@ -40,14 +45,9 @@ func (hasher *bcryptHasher) Decode(decoded string) (*PasswordInfo, error) {
 		return nil, errUnknownAlgorithm
 	}
 
-	b, err := hex.DecodeString(parts[1])
+	cost, err := bcrypt.Cost([]byte(parts[1]))
 	if err != nil {
-		return nil, errUnknownAlgorithm
-	}
-
-	cost, err := bcrypt.Cost(b)
-	if err != nil {
-		return nil, errUnknownAlgorithm
+		return nil, err
 	}
 
 	return &PasswordInfo{
@@ -63,12 +63,15 @@ func (hasher *bcryptHasher) Verify(password, encoded string) bool {
 		return false
 	}
 
-	encoded2, err := hasher.encode(password, pi.Algorithm, pi.Iterations)
-	if err != nil {
-		return false
+	var data []byte
+	if pi.Algorithm == bcryptSha256Algo {
+		d := sha256.Sum256([]byte(password))
+		data = d[:]
+	} else {
+		data = []byte(password)
 	}
-	fmt.Printf("===3: %s\n", encoded2)
-	return encoded2 == encoded
+	err = bcrypt.CompareHashAndPassword([]byte(pi.Hash), data)
+	return err == nil
 }
 
 func (hasher *bcryptHasher) MustUpdate(encoded string) bool {
