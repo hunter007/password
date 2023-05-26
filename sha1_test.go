@@ -2,6 +2,24 @@ package password
 
 import "testing"
 
+func TestSha1WithNoSalt(t *testing.T) {
+	opt := HasherOption{
+		Algorithm:  sha1Algo,
+		Salt:       "",
+		Iterations: 1,
+	}
+	hasher, err := NewHasher(&opt)
+	if err == nil {
+		t.Errorf("NewHasher should be eror")
+	}
+	if hasher != nil {
+		t.Errorf("NewHasher: hasher should be nil")
+	}
+	if err != errBlankSalt {
+		t.Errorf("err should be %s", errBlankSalt)
+	}
+}
+
 func TestSha1(t *testing.T) {
 	salt := "sha1"
 	opt := HasherOption{
