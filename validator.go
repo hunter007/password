@@ -51,12 +51,14 @@ func (opt *ValidatorOption) loadCommonPasswords() error {
 	return nil
 }
 
+const maxLengthPassword = 32
+
 func (opt *ValidatorOption) validate() error {
 	if opt.MinLength <= 0 {
 		return errMin
 	}
 
-	if opt.MaxLength >= 32 {
+	if opt.MaxLength >= maxLengthPassword {
 		return errMax
 	}
 

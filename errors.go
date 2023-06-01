@@ -24,7 +24,7 @@ var errMinMax = errors.New("min_length should less than max_length")
 var errMin = errors.New("min_length should more than 0")
 
 // MinLength should more than 0
-var errMax = errors.New("min_length should more than 0")
+var errMax = errors.New(fmt.Sprintf("max_length should less than %d", maxLengthPassword))
 
 // This password is too common
 var errCommon = errors.New("this password is too common")
