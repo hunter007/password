@@ -58,7 +58,7 @@ func (opt *ValidatorOption) validate() error {
 		return errMin
 	}
 
-	if opt.MaxLength >= maxLengthPassword {
+	if opt.MaxLength > maxLengthPassword {
 		return errMax
 	}
 
