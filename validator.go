@@ -2,7 +2,7 @@ package password
 
 import (
 	"errors"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strings"
 	"unicode"
@@ -37,7 +37,8 @@ func (opt *ValidatorOption) loadCommonPasswords() error {
 		return err
 	}
 	defer resp.Body.Close()
-	bs, err := ioutil.ReadAll(resp.Body)
+
+	bs, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}
