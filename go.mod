@@ -1,6 +1,6 @@
 module github.com/hunter007/password
 
-go 1.13
+go 1.18
 
 require golang.org/x/crypto v0.9.0
 

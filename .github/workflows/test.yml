@@ -14,11 +14,6 @@ jobs:
       fail-fast: false
       matrix:
         gover:
-          - "1.13"
-          - "1.14"
-          - "1.15"
-          - "1.16"
-          - "1.17"
           - "1.18"
           - "1.19"
           - "1.20"
@@ -38,7 +33,7 @@ jobs:
         go-version: ${{ env.GOVER }}
 
     - name: Tidy
-      run: go mod tidy -compat=${{ env.GOVER }}
+      run: go mod tidy
 
     - name: Test
       run: go test -count=1 -race -coverprofile=coverage.txt -covermode=atomic ./...
