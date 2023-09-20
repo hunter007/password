@@ -257,6 +257,7 @@ linters:
     - godox
     - interfacer
     - lll
+    - musttag
     - maligned
     - scopelint
     - unparam
