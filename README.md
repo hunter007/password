@@ -25,6 +25,23 @@ go get github.com/hunter007/password
 
 ## Usage
 
+#### 0. Generate password
+
+```go
+// 1. generate password via default config
+p, _ := password.Generate(12, 4, 2, 1)
+
+// 2. make a custom config. Any utf8 char is supported.
+c := Config{
+    UpperLetters: "壹贰叁肆伍陆柒捌玖拾",
+    LowerLetters: "一二三四五六七八九十",
+    Digits:       "①②③④⑤⑥⑦⑧⑨⑩0️⃣✅",
+    Symbols:      "😭😁😄😞👏🏻🙋🏻‍♀️😴🔥",
+}
+g := NewGenerator(c)
+p, _ := g.Generate(16, 4, 3, 0)
+```
+
 #### 1. Validate password
 
 ```go
