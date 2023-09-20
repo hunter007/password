@@ -34,6 +34,10 @@ type Config struct {
 	random       RandomFunc
 }
 
+func NewGenerator(c Config) Generator {
+	return newGenerator(c)
+}
+
 type generator struct {
 	chars        []rune
 	upperLetters []rune
@@ -43,51 +47,35 @@ type generator struct {
 	random       RandomFunc
 }
 
-type RandomFunc func() int
-
-// CryptoRandom implemented by crypto/rand
-func CryptoRandom() int {
-	n, _ := rand.Int(rand.Reader, big.NewInt(10000))
-	return int(n.Int64())
-}
-
-// MathRandom implemented by math/rand
-func MathRandom() int {
-	r := mrand.New(mrand.NewSource(time.Now().UnixNano()))
-	return int(r.Int63n(10000))
-}
-
 func (g *generator) Generate(length, minDigitLength, minSymbolLength, minUpperLetter uint) (string, error) {
 	if err := check(length, minDigitLength, minSymbolLength, minUpperLetter); err != nil {
 		return "", err
 	}
 
-	pasword := make([]rune, 0, length)
+	password := make([]rune, 0, length)
 	for i, d := 0, len(g.digits); i < int(minDigitLength); i++ {
-		pasword = append(pasword, g.digits[g.random()%d])
+		password = append(password, g.digits[g.random()%d])
 	}
 
 	for i, s := 0, len(g.symbols); i < int(minSymbolLength); i++ {
-		pasword = append(pasword, g.symbols[g.random()%s])
+		password = append(password, g.symbols[g.random()%s])
 	}
 
 	for i, u := 0, len(g.upperLetters); i < int(minUpperLetter); i++ {
-		pasword = append(pasword, g.upperLetters[g.random()%u])
+		password = append(password, g.upperLetters[g.random()%u])
 	}
 
 	remain := int(length) - int(minDigitLength) - int(minSymbolLength) - int(minUpperLetter)
 	for i, t := 0, len(g.chars); i < remain; i++ {
-		pasword = append(pasword, g.chars[g.random()%t])
+		password = append(password, g.chars[g.random()%t])
 	}
 
 	for i := 0; i < int(length/2); i++ {
 		j := g.random() % int(length)
-		t := pasword[j]
-		pasword[j] = pasword[i]
-		pasword[i] = t
+		password[j], password[i] = password[i], password[j]
 	}
 
-	return string(pasword), nil
+	return string(password), nil
 }
 
 func (g *generator) MustGenerate(length, minDigitLength, minSymbolLength, minUpperLetter uint) string {
@@ -96,10 +84,6 @@ func (g *generator) MustGenerate(length, minDigitLength, minSymbolLength, minUpp
 		panic(err)
 	}
 	return s
-}
-
-func NewGenerator(c Config) Generator {
-	return newGenerator(c)
 }
 
 func newGenerator(c Config) Generator {
@@ -179,4 +163,18 @@ func check(length, minDigitLength, minSymbolLength, minUpperLetter uint) error {
 		return ErrExceedsLength
 	}
 	return nil
+}
+
+type RandomFunc func() int
+
+// CryptoRandom implemented by crypto/rand
+func CryptoRandom() int {
+	n, _ := rand.Int(rand.Reader, big.NewInt(10000))
+	return int(n.Int64())
+}
+
+// MathRandom implemented by math/rand
+func MathRandom() int {
+	r := mrand.New(mrand.NewSource(time.Now().UnixNano()))
+	return int(r.Int63n(10000))
 }

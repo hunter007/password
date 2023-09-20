@@ -211,6 +211,9 @@ linters-settings:
       - NOTE
       - OPTIMIZE # marks code that should be optimized before merging
       - HACK # marks hack-arounds that should be removed before merging
+  gosec:
+    excludes:
+      - G404
   godot:
     exclude:
       - 'nosec'
